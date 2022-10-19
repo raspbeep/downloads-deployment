@@ -8,9 +8,11 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"os/signal"
 	"path"
 	"path/filepath"
 	"strings"
+	"syscall"
 )
 
 const basePath string = "/Users/pakratoc/GolandProjects/awesomeProject/sources/"
@@ -219,12 +221,12 @@ func main() {
 			// TODO
 			return
 		}
-		content = append(content, fmt.Sprintf("<a href=\"%s\">oc (%s %s)</a> (<a href=\"%s.tar\">tar</a> <a href=\"%s.zip\">zip</a>",
+		content = append(content, fmt.Sprintf("<a href=\"%s\">oc (%s %s)</a> (<a href=\"%s.tar\">tar</a> <a href=\"%s.zip\">zip</a>)",
 			targetPath,
 			arch,
 			operatingSystem,
-			targetPath,
-			targetPath,
+			filepath.Join(arch, operatingSystem, noExtName),
+			filepath.Join(arch, operatingSystem, noExtName),
 		))
 	}
 
@@ -258,7 +260,7 @@ func main() {
 
 		return nil
 	}); err != nil {
-
+		// TODO
 	}
 
 	server := &http.Server{Addr: ":3333", Handler: http.FileServer(http.Dir(tmpDir))}
@@ -266,4 +268,13 @@ func main() {
 	fmt.Println("listening on port: 3333")
 
 	log.Fatal(server.ListenAndServe())
+}
+
+func init() {
+	c := make(chan os.Signal)
+	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
+	go func() {
+		<-c
+		os.Exit(1)
+	}()
 }
