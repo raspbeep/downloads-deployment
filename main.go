@@ -57,7 +57,6 @@ func writeIndex(path, message string) error {
 	fileContent := strings.Join(fileContentSlice[:], "\n")
 
 	length, err := file.WriteString(fileContent)
-
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -136,10 +135,11 @@ func createZip(path, fileName, fileNameNoExt string) {
 
 func main() {
 	// should launch for each thread
-	tmpDir, err := os.MkdirTemp("", "tmpdir")
+	tmpDir, err := os.MkdirTemp("", "")
 	if err != nil {
 		log.Fatal(err)
 	}
+	fmt.Printf("serving from %s\n", tmpDir)
 
 	defer func(name string) {
 		err := os.Remove(name)
